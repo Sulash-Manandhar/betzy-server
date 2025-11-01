@@ -10,6 +10,8 @@ import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
 import { requestLoggerWithTimeout } from "./middleware/logger";
 import { customCors, securityHeaders } from "./middleware/security";
 import { publicRoutes } from "./routes/public.route";
+import adminRoutes from "./routes/admin.route";
+import protectedRoutes from "./routes/protected.route";
 
 if (!fs.existsSync(FILE_UPLOAD_DESTINATION)) {
   logger.warn("FILE UPLOADS FOLDER NOT FOUND");
@@ -50,7 +52,7 @@ export function createApp(): Application {
 
   createRouterWithSwagger({
     app,
-    routes: publicRoutes,
+    routes: [...publicRoutes, ...adminRoutes, ...protectedRoutes],
   });
 
   app.use(notFoundHandler);

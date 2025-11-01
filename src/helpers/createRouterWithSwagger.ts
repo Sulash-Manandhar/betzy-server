@@ -1,4 +1,4 @@
-import type { CustomPaths, RouteOptions } from "@/core/types";
+import type { CustomPaths, CreateRouterAndSwaggerOptions } from "@/core/types";
 import isAdmin from "@/middleware/isAdmin";
 import { getRouteType } from "@/utils/routeType";
 import { getSwaggerOption } from "@/utils/swaggerInit";
@@ -7,7 +7,10 @@ import { Router } from "express";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
-export function createRouterWithSwagger({ routes, app }: RouteOptions) {
+export function createRouterWithSwagger({
+  routes,
+  app,
+}: CreateRouterAndSwaggerOptions) {
   const router = Router();
 
   const swaggerPaths: Record<string, CustomPaths> = {};

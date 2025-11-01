@@ -3,6 +3,20 @@ import type { PathItem } from "swagger-jsdoc";
 
 export type RouteType = "public" | "admin" | "protected";
 export type MethodType = "get" | "post" | "put" | "delete" | "patch";
+export type Tag =
+  | "User"
+  | "Membership"
+  | "Game"
+  | "CustomerGameTag"
+  | "Payment"
+  | "Image"
+  | "GameTagRequest"
+  | "MasterTask"
+  | "Task"
+  | "Completion"
+  | "WalletDeposit"
+  | "Referral"
+  | "Notification";
 
 export type Route = {
   url: string;
@@ -10,7 +24,7 @@ export type Route = {
   method: MethodType;
   description: string;
   handler: (req: Request, res: Response, next: NextFunction) => void;
-  tags?: Array<string>;
+  tags?: Array<Tag>;
   parameters?: CustomParameter;
   responses?: {
     [k: number]: {
@@ -19,7 +33,7 @@ export type Route = {
   };
 };
 
-export type RouteOptions = {
+export type CreateRouterAndSwaggerOptions = {
   app: Application;
   routes: Array<Route>;
 };

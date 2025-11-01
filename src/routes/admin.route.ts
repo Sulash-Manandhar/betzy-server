@@ -1,5 +1,5 @@
-import { Router } from "express";
+import type { Route } from "@/core/types";
 
-const adminRouter = Router();
+const adminRoutes: Route[] = [];
 
-export default adminRouter;
+export default adminRoutes;

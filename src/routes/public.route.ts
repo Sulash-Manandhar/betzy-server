@@ -11,24 +11,4 @@ export const publicRoutes: Route[] = [
       res.json({ message: "Hello World!" });
     },
   },
-  {
-    url: "/book",
-    type: "admin",
-    method: "get",
-    description: "Get all Book",
-    tags: ["Book"],
-    handler: (req, res) => {
-      res.json({ message: "Hello Book!" });
-    },
-  },
-  {
-    url: "/posts",
-    type: "protected",
-    method: "get",
-    description: "Get all Posts!",
-    tags: ["Posts"],
-    handler: (req, res) => {
-      res.json({ message: "Hello Posts!" });
-    },
-  },
 ];

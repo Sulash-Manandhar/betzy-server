@@ -1,5 +1,5 @@
-import { Router } from "express";
+import type { Route } from "@/core/types";
 
-const protectedRouter = Router();
+const protectedRoutes: Route[] = [];
 
-export default protectedRouter;
+export default protectedRoutes;
