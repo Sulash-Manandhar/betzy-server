@@ -6,10 +6,14 @@ import {
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
 
-export const errorHandler = (err: Error, req: Request, res: Response) => {
+export const errorHandler = (
+  err: Error,
+  req: Request,
+  res: Response,
+  _next: NextFunction
+) => {
   logger.error("Error occurred:", {
     error: err.message,
-    stack: err.stack,
     url: req.url,
     method: req.method,
   });

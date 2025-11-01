@@ -27,7 +27,7 @@ const transports: winston.transport[] = [
 ];
 
 // Add file transports in production
-if (env.NODE_ENV === "production") {
+if (true) {
   transports.push(
     new DailyRotateFile({
       filename: "logs/error-%DATE%.log",

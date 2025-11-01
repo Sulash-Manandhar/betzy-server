@@ -1,12 +1,15 @@
 import type { Request, Response, NextFunction } from "express";
 import boom from "@hapi/boom";
 import { logger } from "../config/logger";
+import { getAuth } from "@clerk/express";
 
 export const requestLoggerWithTimeout = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+  const auth = getAuth(req);
+
   const start = Date.now();
   const timeoutMillis = 60000;
 
@@ -27,13 +30,16 @@ export const requestLoggerWithTimeout = (
   res.on("finish", () => {
     clearTimeout(timeout);
     const duration = Date.now() - start;
-    logger.info({
-      method: req.method,
-      url: req.originalUrl,
-      status: res.statusCode,
-      duration: `${duration}ms`,
-      ip: req.ip,
-    });
+    logger.info(
+      JSON.stringify({
+        method: req.method,
+        url: req.originalUrl,
+        status: res.statusCode,
+        duration: `${duration}ms`,
+        ip: req.ip || JSON.stringify(req.ips) || "-",
+        requestedBy: auth?.userId || "-",
+      })
+    );
   });
 
   next();

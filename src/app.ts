@@ -7,7 +7,7 @@ import { logger } from "./config/logger";
 import { FILE_UPLOAD_DESTINATION } from "./core/constant";
 import { createRouterWithSwagger } from "./helpers/createRouterWithSwagger";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
-import { requestLoggerWithTimeout } from "./middleware/logger";
+import { requestLoggerWithTimeout } from "./middleware/requestLoggerWithTimeout";
 import { customCors, securityHeaders } from "./middleware/security";
 import { publicRoutes } from "./routes/public.route";
 import adminRoutes from "./routes/admin.route";

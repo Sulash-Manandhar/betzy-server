@@ -1,4 +1,5 @@
 import type { Route } from "@/core/types";
+import userController from "@/modules/user/user.controller";
 
 export const publicRoutes: Route[] = [
   {
@@ -7,8 +8,6 @@ export const publicRoutes: Route[] = [
     method: "get",
     description: "Get all users",
     tags: ["User"],
-    handler: (req, res) => {
-      res.json({ message: "Hello World!" });
-    },
+    handler: userController.getAllUsers,
   },
 ];
