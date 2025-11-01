@@ -1,0 +1,233 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+enum TaskType {
+  DAILY
+  WEEKLY
+  GENERAL
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+}
+
+enum UserType {
+  ADMIN
+  CUSTOMER
+}
+
+enum GameTagStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum NotificationType {
+  PAYMENT_INITIATED
+}
+
+model Membership {
+  id             Int      @id @default(autoincrement())
+  name           String   @unique
+  ordering       Int      @unique
+  pointsRequired Int
+  bonus          Float    @default(0.0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  users          User[]
+}
+
+model User {
+  id             Int               @id @default(autoincrement())
+  clerkId        String            @unique
+  firstName      String?           @default("Anonymous")
+  lastName       String?           @default("Anonymous")
+  email          String            @unique
+  profileUrl     String?
+  xp             Float?            @default(0.0)
+  balance        Float?            @default(0.0)
+  lastSpinAt     DateTime?
+  membershipId   Int?
+  referralCode   String            @unique
+  timezone       String?           @default("UTC")
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  deletedAt      DateTime?
+  gameTags       CustomerGameTag[]
+  payments       Payment[]
+  gameTagRequest GameTagRequest[]
+  walletDeposit  WalletDeposit[]
+  tasks          Task[]
+  completions    Completion[]
+  membership     Membership?       @relation(fields: [membershipId], references: [id], onDelete: SetNull)
+  referredBy     Referral[]        @relation("Referrer")
+  referrals      Referral[]        @relation("ReferredUser")
+  Notification   Notification[]
+}
+
+model Game {
+  id             Int               @id @default(autoincrement())
+  name           String
+  game_link      String?
+  image_id       Int?
+  description    String?
+  is_featured    Boolean?          @default(false)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  deletedAt      DateTime?
+  tags           CustomerGameTag[]
+  payments       Payment[]
+  gameTagRequest GameTagRequest[]
+  walletDeposit  WalletDeposit[]
+  image          Image?            @relation(fields: [image_id], references: [id], onDelete: NoAction)
+}
+
+model CustomerGameTag {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  gameId    Int
+  gameTag   String    @unique
+  password  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Game      Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  Payment   Payment[]
+
+  @@unique([gameId, gameTag])
+}
+
+model Payment {
+  id              Int             @id @default(autoincrement())
+  userId          Int
+  gameId          Int
+  gameTagId       Int
+  amount          Float
+  currency        String
+  status          PaymentStatus
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deletedAt       DateTime?
+  User            User            @relation(fields: [userId], references: [id], onDelete: NoAction)
+  Game            Game            @relation(fields: [gameId], references: [id], onDelete: NoAction)
+  CustomerGameTag CustomerGameTag @relation(fields: [gameTagId], references: [id], onDelete: NoAction)
+}
+
+model Image {
+  id        Int       @id @default(autoincrement())
+  fileName  String
+  url       String
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  game      Game[]
+}
+
+model GameTagRequest {
+  id        Int           @id @default(autoincrement())
+  gameId    Int
+  userId    Int
+  status    GameTagStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  User      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Game      Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, userId])
+}
+
+model MasterTask {
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String?
+  type          TaskType
+  numberOfTimes Int      @default(1)
+  reward        Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  tasks         Task[]
+
+  @@unique([title, type])
+}
+
+model Task {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  masterTaskId   Int
+  completed      Boolean      @default(false)
+  completedTimes Int          @default(0)
+  completedAt    DateTime?
+  resetAt        DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  masterTask     MasterTask   @relation(fields: [masterTaskId], references: [id], onDelete: Cascade)
+  completions    Completion[]
+
+  @@unique([userId, masterTaskId])
+  @@index([userId, completed])
+  @@index([userId, masterTaskId, resetAt])
+}
+
+model Completion {
+  id               Int      @id @default(autoincrement())
+  taskId           Int
+  userId           Int
+  completedAt      DateTime @default(now())
+  membershipPoints Int      @default(0)
+  task             Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, taskId])
+}
+
+model WalletDeposit {
+  id        Int           @id @default(autoincrement())
+  userId    Int
+  gameId    Int
+  amount    Float         @default(0.0)
+  status    GameTagStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game      Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
+}
+
+model Referral {
+  id             Int      @id @default(autoincrement())
+  referrerId     Int
+  referredUserId Int
+  referralCode   String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  referrer       User     @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referredUser   User     @relation("ReferredUser", fields: [referredUserId], references: [id], onDelete: Cascade)
+
+  @@unique([referrerId, referredUserId], map: "unique_referral") // Prevents same referrer-referred pair
+  @@index([referrerId])
+  @@index([referredUserId])
+  @@index([referralCode])
+}
+
+model Notification {
+  id          Int              @id @default(autoincrement())
+  title       String
+  description String?
+  type        NotificationType
+  userId      Int
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
