@@ -5,12 +5,11 @@ import fs from "fs";
 import { env } from "./config/env";
 import { logger } from "./config/logger";
 import { FILE_UPLOAD_DESTINATION } from "./core/constant";
+import { createRouterWithSwagger } from "./helpers/createRouterWithSwagger";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
 import { requestLoggerWithTimeout } from "./middleware/logger";
 import { customCors, securityHeaders } from "./middleware/security";
-import adminRouter from "./routes/admin.route";
-import protectedRouter from "./routes/protected.route";
-import publicRouter from "./routes/public.route";
+import { publicRoutes } from "./routes/public.route";
 
 if (!fs.existsSync(FILE_UPLOAD_DESTINATION)) {
   logger.warn("FILE UPLOADS FOLDER NOT FOUND");
@@ -18,7 +17,7 @@ if (!fs.existsSync(FILE_UPLOAD_DESTINATION)) {
   fs.mkdirSync(FILE_UPLOAD_DESTINATION, { recursive: true });
 }
 
-export const createApp = (): Application => {
+export function createApp(): Application {
   const app = express();
   app.use(
     clerkMiddleware({
@@ -49,12 +48,13 @@ export const createApp = (): Application => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
-  app.use("/api", publicRouter);
-  app.use("/api/protected", protectedRouter);
-  app.use("/api/admin", adminRouter);
+  createRouterWithSwagger({
+    app,
+    routes: publicRoutes,
+  });
 
   app.use(notFoundHandler);
   app.use(errorHandler);
 
   return app;
-};
+}

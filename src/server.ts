@@ -12,7 +12,6 @@ const gracefulShutdown = async (
   logger.info(`${signal} received, closing server gracefully...`);
   server.close(async () => {
     logger.info("HTTP server closed");
-    logger.info("Database disconnected");
     process.exit(0);
   });
   setTimeout(() => {
@@ -28,7 +27,10 @@ const startServer = async () => {
         `🚀 Server running on port ${env.PORT} in ${env.NODE_ENV} mode`
       );
       logger.info(`📝 Logs level: ${env.LOG_LEVEL.toLocaleUpperCase()}`);
-      logger.info(`Server Status: http://localhost:${env.PORT}/health`);
+      logger.info(`🚀 Server Status: http://localhost:${env.PORT}/health`);
+      logger.info(
+        `📘 Swagger docs available at http://localhost:${env.PORT}/api-docs`
+      );
     });
 
     process.on("SIGTERM", () => gracefulShutdown(server, "SIGTERM"));
