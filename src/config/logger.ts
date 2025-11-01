@@ -39,6 +39,7 @@ if (true) {
     new DailyRotateFile({
       filename: "logs/combined-%DATE%.log",
       datePattern: "YYYY-MM-DD",
+      level: "info",
       maxFiles: "14d",
       format: logFormat,
     })
