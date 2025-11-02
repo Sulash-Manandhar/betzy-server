@@ -1,10 +1,11 @@
-import type { Request, Response, NextFunction } from "express";
+import { HTTPStatusCode } from "@/utils/packages";
 import Boom from "@hapi/boom";
-import { logger } from "../config/logger";
 import {
   PrismaClientKnownRequestError,
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
+import type { NextFunction, Request, Response } from "express";
+import { logger } from "../config/logger";
 
 export const errorHandler = (
   err: Error,
@@ -34,53 +35,53 @@ export const errorHandler = (
   if (err instanceof PrismaClientKnownRequestError) {
     switch (err.code) {
       case "P2002":
-        return res.status(409).json({
+        return res.status(HTTPStatusCode.CONFLICT).json({
           success: false,
           error: {
             message: "A record with this value already exists",
-            statusCode: 409,
+            statusCode: HTTPStatusCode.CONFLICT,
             details: { field: err.meta?.target },
           },
         });
       case "P2025":
-        return res.status(404).json({
+        return res.status(HTTPStatusCode.NOT_FOUND).json({
           success: false,
           error: {
             message: "Record not found",
-            statusCode: 404,
+            statusCode: HTTPStatusCode.NOT_FOUND,
           },
         });
       case "P2003":
-        return res.status(400).json({
+        return res.status(HTTPStatusCode.BAD_REQUEST).json({
           success: false,
           error: {
             message: "Invalid foreign key constraint",
-            statusCode: 400,
+            statusCode: HTTPStatusCode.BAD_REQUEST,
           },
         });
       default:
-        return res.status(400).json({
+        return res.status(HTTPStatusCode.BAD_REQUEST).json({
           success: false,
           error: {
             message: "Database operation failed",
-            statusCode: 400,
+            statusCode: HTTPStatusCode.BAD_REQUEST,
           },
         });
     }
   }
 
   if (err instanceof PrismaClientValidationError) {
-    return res.status(400).json({
+    return res.status(HTTPStatusCode.BAD_REQUEST).json({
       success: false,
       error: {
         message: "Invalid data provided",
-        statusCode: 400,
+        statusCode: HTTPStatusCode.BAD_REQUEST,
       },
     });
   }
 
   // Default error
-  const statusCode = 500;
+  const statusCode = HTTPStatusCode.INTERNAL_SERVER_ERROR;
   res.status(statusCode).json({
     success: false,
     error: {
@@ -94,11 +95,11 @@ export const errorHandler = (
 };
 
 export const notFoundHandler = (req: Request, res: Response) => {
-  res.status(404).json({
+  res.status(HTTPStatusCode.NOT_FOUND).json({
     success: false,
     error: {
       message: `Route ${req.originalUrl} not found`,
-      statusCode: 404,
+      statusCode: HTTPStatusCode.NOT_FOUND,
     },
   });
 };

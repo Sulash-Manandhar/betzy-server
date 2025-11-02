@@ -1,17 +1,12 @@
-import Boom from "@hapi/boom";
-import type { NextFunction, Request, Response } from "express";
+import { asyncHandler } from "@/helpers/asyncHandler";
+import type { Request, Response } from "express";
+import { userService } from "./user.service";
 
 const userController = {
-  getAllUsers: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      throw Boom.conflict("Failed to load database", {
-        error: "Generic",
-      });
-      res.status(200).json({ message: "Hello World!" });
-    } catch (error) {
-      next(error);
-    }
-  },
+  getAllUsers: asyncHandler(async (req: Request, res: Response) => {
+    const response = await userService.getAllUsers();
+    res.status(201).json(response);
+  }),
 };
 
 export default userController;

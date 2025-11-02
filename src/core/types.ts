@@ -31,6 +31,7 @@ export type Route = {
       description: string;
     };
   };
+  validator?: any;
 };
 
 export type CreateRouterAndSwaggerOptions = {

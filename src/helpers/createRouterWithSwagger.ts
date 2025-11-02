@@ -3,9 +3,17 @@ import isAdmin from "@/middleware/isAdmin";
 import { getRouteType } from "@/utils/routeType";
 import { getSwaggerOption } from "@/utils/swaggerInit";
 import { requireAuth } from "@clerk/express";
-import { Router } from "express";
+import {
+  Router,
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+
+const defaultValidator = (req: Request, res: Response, next: NextFunction) =>
+  next();
 
 export function createRouterWithSwagger({
   routes,
@@ -29,6 +37,7 @@ export function createRouterWithSwagger({
           description: "Success",
         },
       },
+      validator = defaultValidator,
     } = route;
 
     const urlWithType = getRouteType(type, url);
@@ -44,13 +53,19 @@ export function createRouterWithSwagger({
 
     switch (type) {
       case "admin":
-        return router[method](urlWithType, requireAuth(), isAdmin, handler);
+        return router[method](
+          urlWithType,
+          requireAuth(),
+          isAdmin,
+          validator,
+          handler
+        );
       case "protected":
-        return router[method](urlWithType, requireAuth(), handler);
+        return router[method](urlWithType, requireAuth(), validator, handler);
       case "public":
-        return router[method](urlWithType, handler);
+        return router[method](urlWithType, validator, handler);
       default:
-        return router[method](urlWithType, handler);
+        return router[method](urlWithType, validator, handler);
     }
   });
 
