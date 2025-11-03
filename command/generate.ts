@@ -78,8 +78,8 @@ import z from "zod";
 /** Basic schema template
  * z.object({
  * body:z.object({}),
- * query:z.object({}),
- * params:z.object({})
+ * query:z.object({}), (?limit, ?page)
+ * params:z.object({}) (/:id)
  * })
  **/
 

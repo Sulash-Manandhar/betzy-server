@@ -1,4 +1,4 @@
 import z from "zod";
 
-export const pageNumberSchema = z.number();
-export const limitSchema = z.number();
+export const pageNumberSchema = z.coerce.number().min(1);
+export const limitSchema = z.coerce.number().min(1);

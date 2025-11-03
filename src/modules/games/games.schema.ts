@@ -4,8 +4,8 @@ import z from "zod";
 /** Basic schema template
  * z.object({
  * body:z.object({}),
- * query:z.object({}),
- * params:z.object({})
+ * query:z.object({}), (?limit, ?page)
+ * params:z.object({}) (/:id)
  * })
  **/
 
@@ -28,7 +28,7 @@ export const updateGameSchema = z.object({
 });
 
 export const findAllGameSchema = z.object({
-  params: z.object({
+  query: z.object({
     name: z.string().optional(),
     description: z.string().optional(),
     limit: limitSchema,
@@ -38,4 +38,4 @@ export const findAllGameSchema = z.object({
 
 export type CreateGamePayload = z.infer<typeof createGameSchema>["body"];
 export type UpdateGamePayload = z.infer<typeof updateGameSchema>["body"];
-export type FindAllGamePayload = z.infer<typeof findAllGameSchema>["params"];
+export type FindAllGamePayload = z.infer<typeof findAllGameSchema>["query"];

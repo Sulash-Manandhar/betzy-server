@@ -4,6 +4,7 @@ import type {
   FindAllGamePayload,
   UpdateGamePayload,
 } from "./games.schema";
+import { DEFAULT_LIMIT, DEFAULT_PAGE } from "@/core/constant";
 
 const gamesRepo = {
   create: (payload: CreateGamePayload) => {
@@ -37,7 +38,13 @@ const gamesRepo = {
     });
   },
   findAll: (query: FindAllGamePayload) => {
-    const { page, limit, name, description } = query;
+    const {
+      page = DEFAULT_PAGE,
+      limit = DEFAULT_LIMIT,
+      name,
+      description,
+    } = query;
+
     const skip = (page - 1) * limit;
     return prisma.$transaction([
       prisma.game.findMany({

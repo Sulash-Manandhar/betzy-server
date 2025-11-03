@@ -13,7 +13,6 @@ export function validate<T extends ZodTypeAny>(
         query: req.query,
         params: req.params,
       });
-      next();
     } catch (error) {
       console.log("IsZodError");
       if (error instanceof ZodError) {
