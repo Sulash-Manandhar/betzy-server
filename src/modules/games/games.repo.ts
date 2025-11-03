@@ -1,0 +1,78 @@
+import prisma from "@/config/database";
+import type {
+  CreateGamePayload,
+  FindAllGamePayload,
+  UpdateGamePayload,
+} from "./games.schema";
+
+const gamesRepo = {
+  create: (payload: CreateGamePayload) => {
+    return prisma.game.create({
+      data: payload,
+    });
+  },
+  update: (id: number, payload: UpdateGamePayload) => {
+    return prisma.game.update({
+      where: {
+        id,
+      },
+      data: payload,
+    });
+  },
+  findOne: (id: number) => {
+    return prisma.game.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        image: true,
+      },
+    });
+  },
+  destroy: (id: number) => {
+    return prisma.game.delete({
+      where: {
+        id,
+      },
+    });
+  },
+  findAll: (query: FindAllGamePayload) => {
+    const { page, limit, name, description } = query;
+    const skip = (page - 1) * limit;
+    return prisma.$transaction([
+      prisma.game.findMany({
+        skip,
+        take: limit,
+        orderBy: {
+          createdAt: "asc",
+        },
+        include: {
+          image: true,
+        },
+        where: {
+          name: {
+            contains: name,
+          },
+          description: {
+            contains: description,
+          },
+        },
+      }),
+      prisma.game.count({
+        orderBy: {
+          createdAt: "asc",
+        },
+        where: {
+          name: {
+            contains: name,
+          },
+          description: {
+            contains: description,
+          },
+        },
+      }),
+    ]);
+  },
+};
+
+export default gamesRepo;

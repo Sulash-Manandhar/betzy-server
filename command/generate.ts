@@ -50,7 +50,13 @@ const serviceTemplate = `
 import ${camelName}Repo from './${camelName}.repo';
 
 const ${camelName}Service = {
-  basic: async ()=>{}
+  basic: async ()=>{
+    try{
+    
+    }
+    catch(error){
+    throw error;
+    }
 }
 
 export default ${camelName}Service;
@@ -60,7 +66,7 @@ const repositoryTemplate = `
 import prisma from "@/config/database";
 
 const ${camelName}Repo = {
-    basic: async () =>{}
+    basic: () =>{}
 }
 
 export default ${camelName}Repo;
@@ -68,6 +74,14 @@ export default ${camelName}Repo;
 
 const schemaTemplate = `
 import z from "zod";
+
+/** Basic schema template
+ * z.object({
+ * body:z.object({}),
+ * query:z.object({}),
+ * params:z.object({})
+ * })
+ **/
 
 export const basic = z.object({
     body:z.object({}),

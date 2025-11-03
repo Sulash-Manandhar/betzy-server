@@ -23,6 +23,7 @@ const envSchema = z.object({
   NOWPAYMENT_PUBLIC_KEY: z.string(),
   NOWPAYMENT_EMAIL: z.string(),
   NOWPAYMENT_PASSWORD: z.string(),
+  ENABLE_ROUTE_LOGGER: z.coerce.boolean().default(false),
 });
 
 function validateEnv() {
