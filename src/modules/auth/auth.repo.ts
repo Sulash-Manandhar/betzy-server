@@ -1,7 +1,7 @@
 import prisma from "@/config/database";
-import type { CreateUserPayload } from "./auth.schema";
+import type { CreateUserPayloadBody } from "./auth.schema";
 
-type NewCreateUserPayload = CreateUserPayload & {
+type NewCreateUserPayload = CreateUserPayloadBody & {
   balance?: number;
   membershipId?: number;
   referralCode: string;

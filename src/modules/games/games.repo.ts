@@ -38,12 +38,7 @@ const gamesRepo = {
     });
   },
   findAll: (query: FindAllGamePayload) => {
-    const {
-      page = DEFAULT_PAGE,
-      limit = DEFAULT_LIMIT,
-      name,
-      description,
-    } = query;
+    const { page, limit, name, description } = query;
 
     const skip = (page - 1) * limit;
     return prisma.$transaction([

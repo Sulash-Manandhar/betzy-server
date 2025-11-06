@@ -19,6 +19,9 @@ export const createGameSchema = z.object({
 });
 
 export const updateGameSchema = z.object({
+  params: z.object({
+    id: z.coerce.number(),
+  }),
   body: z.object({
     name: z.string().optional(),
     game_link: z.string().optional(),
@@ -36,6 +39,10 @@ export const findAllGameSchema = z.object({
   }),
 });
 
+export type CreateGame = z.infer<typeof createGameSchema>;
 export type CreateGamePayload = z.infer<typeof createGameSchema>["body"];
+export type UpdateGame = z.infer<typeof updateGameSchema>;
 export type UpdateGamePayload = z.infer<typeof updateGameSchema>["body"];
+
+export type FindAllGame = z.infer<typeof findAllGameSchema>;
 export type FindAllGamePayload = z.infer<typeof findAllGameSchema>["query"];

@@ -34,13 +34,20 @@ if (!fs.existsSync(baseDir)) {
 }
 
 const controllerTemplate = `
+import { asyncValidationHandler } from "@/helpers/asyncHandler";
+import { HTTPStatusCode } from "@/utils/packages";
+import ${camelName}Service from './${camelName}.service';
+import { basicSchema } from "@/core/schema";
 import { asyncHandler } from "@/helpers/asyncHandler";
 import type { Request, Response } from "express";
-import ${camelName}Service from './${camelName}.service';
-
 
 const ${camelName}Controller = {
-  basic: asyncHandler(async (req:Request, res:Response)=>{})
+  basic: asyncValidationHandler<any>(basicSchema)(
+    async (req, res, validated) => {
+      res.status(HTTPStatusCode.CREATED).json(response);
+    }
+  ),
+  basic2: asyncHandler(async (req:Request, res:Response)=>{})
 }
 export default ${camelName}Controller;
 

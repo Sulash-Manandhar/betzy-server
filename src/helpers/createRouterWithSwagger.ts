@@ -2,16 +2,12 @@ import { env } from "@/config/env";
 import { logger } from "@/config/logger";
 import type { CreateRouterAndSwaggerOptions, CustomPaths } from "@/core/types";
 import isAdmin from "@/middleware/isAdmin";
-import { validate } from "@/middleware/validator";
 import { getRouteType } from "@/utils/routeType";
 import { getSwaggerOption } from "@/utils/swaggerInit";
 import { requireAuth } from "@clerk/express";
 import { Router } from "express";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import z from "zod";
-
-const defaultSchema = z.object({});
 
 export function createRouterWithSwagger({
   routes,
@@ -35,7 +31,6 @@ export function createRouterWithSwagger({
           description: "Success",
         },
       },
-      schema = defaultSchema,
     } = route;
 
     const urlWithType = getRouteType(type, url);
@@ -51,24 +46,13 @@ export function createRouterWithSwagger({
 
     switch (type) {
       case "admin":
-        return router[method](
-          urlWithType,
-          requireAuth(),
-          isAdmin,
-          validate(schema),
-          handler
-        );
+        return router[method](urlWithType, requireAuth(), isAdmin, handler);
       case "protected":
-        return router[method](
-          urlWithType,
-          requireAuth(),
-          validate(schema),
-          handler
-        );
+        return router[method](urlWithType, requireAuth(), handler);
       case "public":
-        return router[method](urlWithType, validate(schema), handler);
+        return router[method](urlWithType, handler);
       default:
-        return router[method](urlWithType, validate(schema), handler);
+        return router[method](urlWithType, handler);
     }
   });
 

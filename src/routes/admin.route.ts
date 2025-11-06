@@ -1,9 +1,5 @@
 import type { Route } from "@/core/types";
 import gamesController from "@/modules/games/games.controller";
-import {
-  createGameSchema,
-  updateGameSchema,
-} from "@/modules/games/games.schema";
 
 const adminRoutes: Route[] = [
   {
@@ -12,7 +8,7 @@ const adminRoutes: Route[] = [
     method: "post",
     description: "Create a new game",
     tags: ["Game"],
-    schema: createGameSchema,
+    // schema: createGameSchema,
     handler: gamesController.create,
   },
   {
@@ -21,7 +17,7 @@ const adminRoutes: Route[] = [
     method: "put",
     description: "Update a game",
     tags: ["Game"],
-    schema: updateGameSchema,
+    // schema: updateGameSchema,
     handler: gamesController.update,
   },
   {

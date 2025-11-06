@@ -1,6 +1,5 @@
 import type { Route } from "@/core/types";
 import gamesController from "@/modules/games/games.controller";
-import { findAllGameSchema } from "@/modules/games/games.schema";
 
 export const publicRoutes: Route[] = [
   {
@@ -9,7 +8,6 @@ export const publicRoutes: Route[] = [
     method: "get",
     description: "Get all games",
     tags: ["Game"],
-    schema: findAllGameSchema,
     handler: gamesController.findAll,
   },
   {

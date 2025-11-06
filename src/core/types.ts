@@ -1,6 +1,5 @@
 import type { Application, NextFunction, Request, Response } from "express";
 import type { PathItem } from "swagger-jsdoc";
-import type { ZodObject } from "zod";
 
 export type RouteType = "public" | "admin" | "protected";
 export type MethodType = "get" | "post" | "put" | "delete" | "patch";
@@ -36,7 +35,6 @@ export type Route = {
       description: string;
     };
   };
-  schema?: ZodObject;
 };
 
 export type CreateRouterAndSwaggerOptions = {

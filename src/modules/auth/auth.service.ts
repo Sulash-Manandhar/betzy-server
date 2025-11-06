@@ -5,10 +5,10 @@ import {
 } from "@/core/constant";
 import { referralService } from "../referral/referral.service";
 import { authRepo } from "./auth.repo";
-import type { CreateUserPayload } from "./auth.schema";
+import type { CreateUserPayloadBody } from "./auth.schema";
 
 export const authService = {
-  clerkCreate: async (payload: CreateUserPayload) => {
+  clerkCreate: async (payload: CreateUserPayloadBody) => {
     try {
       const newCode = await referralService.generate();
       const response = await authRepo.findUserByClerkId(payload.clerkId);

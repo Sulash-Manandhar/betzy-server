@@ -1,10 +1,13 @@
-import { asyncHandler } from "@/helpers/asyncHandler";
-import type { Request, Response } from "express";
+import { asyncValidationHandler } from "@/helpers/asyncHandler";
+import { createUserSchema, type CreateUserZodSchema } from "./auth.schema";
 import { authService } from "./auth.service";
+import { HTTPStatusCode } from "@/utils/packages";
 
 export const authController = {
-  create: asyncHandler(async (req: Request, res: Response) => {
-    const response = await authService.clerkCreate(req.body);
-    res.status(201).json(response);
-  }),
+  create: asyncValidationHandler<CreateUserZodSchema>(createUserSchema)(
+    async (req, res, validated) => {
+      const response = await authService.clerkCreate(validated.body);
+      res.status(HTTPStatusCode.CREATED).json(response);
+    }
+  ),
 };
