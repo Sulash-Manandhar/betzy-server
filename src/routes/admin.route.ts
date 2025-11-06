@@ -1,5 +1,6 @@
 import type { Route } from "@/core/types";
 import gamesController from "@/modules/games/games.controller";
+import notificationController from "@/modules/notification/notification.controller";
 
 const adminRoutes: Route[] = [
   {
@@ -8,7 +9,6 @@ const adminRoutes: Route[] = [
     method: "post",
     description: "Create a new game",
     tags: ["Game"],
-    // schema: createGameSchema,
     handler: gamesController.create,
   },
   {
@@ -17,7 +17,6 @@ const adminRoutes: Route[] = [
     method: "put",
     description: "Update a game",
     tags: ["Game"],
-    // schema: updateGameSchema,
     handler: gamesController.update,
   },
   {
@@ -27,6 +26,14 @@ const adminRoutes: Route[] = [
     description: "Delete a new game",
     tags: ["Game"],
     handler: gamesController.destroy,
+  },
+  {
+    url: "/notification",
+    type: "admin",
+    method: "get",
+    description: "Get all notification",
+    tags: ["Notification"],
+    handler: notificationController.findAll,
   },
 ];
 

@@ -1,6 +1,7 @@
 import type { Route } from "@/core/types";
 import { authController } from "@/modules/auth/auth.controller";
 import membershipController from "@/modules/membership/membership.controller";
+import notificationController from "@/modules/notification/notification.controller";
 
 const protectedRoutes: Route[] = [
   {
@@ -18,6 +19,14 @@ const protectedRoutes: Route[] = [
     description: "Get user membership level",
     tags: ["Membership"],
     handler: membershipController.currentMembership,
+  },
+  {
+    url: "/notification",
+    type: "protected",
+    method: "post",
+    description: "Create a new notification",
+    tags: ["Notification"],
+    handler: notificationController.create,
   },
 ];
 

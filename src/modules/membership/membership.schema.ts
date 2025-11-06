@@ -1,4 +1,4 @@
-import { DEFAULT_ORDER_BY_ENUM } from "@/core/constant";
+import { ORDER_BY_TYPE } from "@/core/constant";
 import { limitSchema, pageNumberSchema } from "@/core/schema";
 import type { Membership } from "prisma/generated/prisma/client";
 import z from "zod";
@@ -16,7 +16,7 @@ export const findAllMembershipSchema = z.object({
     name: z.string().optional(),
     limit: limitSchema,
     page: pageNumberSchema,
-    orderby: z.enum(DEFAULT_ORDER_BY_ENUM).optional().nullable(),
+    orderby: z.enum(ORDER_BY_TYPE).optional().nullable(),
   }),
 });
 
