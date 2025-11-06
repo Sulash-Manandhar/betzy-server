@@ -5,3 +5,7 @@ export const DEFAULT_MEMBERSHIP_ID = 1;
 export const DEFAULT_TIMEZONE = "UTC";
 export const DEFAULT_LIMIT = 20;
 export const DEFAULT_PAGE = 1;
+
+export const DEFAULT_ORDER_BY_ENUM = ["asc", "desc"] as const;
+
+export const DEFAULT_ORDER_BY = "desc" as const;

@@ -44,7 +44,7 @@ import type { Request, Response } from "express";
 const ${camelName}Controller = {
   basic: asyncValidationHandler<any>(basicSchema)(
     async (req, res, validated) => {
-      res.status(HTTPStatusCode.CREATED).json(response);
+      res.status(HTTPStatusCode.CREATED).json({});
     }
   ),
   basic2: asyncHandler(async (req:Request, res:Response)=>{})
@@ -64,6 +64,7 @@ const ${camelName}Service = {
     catch(error){
     throw error;
     }
+  }
 }
 
 export default ${camelName}Service;
