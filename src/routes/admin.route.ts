@@ -1,6 +1,7 @@
 import type { Route } from "@/core/types";
 import gamesController from "@/modules/games/games.controller";
 import notificationController from "@/modules/notification/notification.controller";
+import userController from "@/modules/user/user.controller";
 
 const adminRoutes: Route[] = [
   {
@@ -34,6 +35,22 @@ const adminRoutes: Route[] = [
     description: "Get all notification",
     tags: ["Notification"],
     handler: notificationController.findAll,
+  },
+  {
+    url: "/user",
+    type: "admin",
+    method: "get",
+    description: "Get all users",
+    tags: ["User"],
+    handler: userController.findAll,
+  },
+  {
+    url: "/user/:id",
+    type: "admin",
+    method: "get",
+    description: "Get user detail",
+    tags: ["User"],
+    handler: userController.findOne,
   },
 ];
 
