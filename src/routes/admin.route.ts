@@ -94,6 +94,22 @@ const adminRoutes: Route[] = [
     tags: ["Image"],
     handler: galleryController.createImages,
   },
+  {
+    url: "/gallery",
+    type: "admin",
+    method: "get",
+    description: "Get images list",
+    tags: ["Image"],
+    handler: galleryController.findAll,
+  },
+  {
+    url: "/gallery/:id",
+    type: "admin",
+    method: "delete",
+    description: "Delete an images",
+    tags: ["Image"],
+    handler: galleryController.destroy,
+  },
 ];
 
 export default adminRoutes;

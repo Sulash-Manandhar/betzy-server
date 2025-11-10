@@ -50,7 +50,9 @@ const galleryService = {
       if (fs.existsSync(image.url)) {
         fs.unlinkSync(image.url);
       }
-      return await galleryRepo.remove(id);
+      return {
+        message: "OK",
+      };
     } catch (error) {
       throw error;
     }
