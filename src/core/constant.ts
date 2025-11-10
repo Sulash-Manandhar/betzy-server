@@ -14,3 +14,5 @@ export const ORDER_BY_TYPE: SortOrder[] = ["asc", "desc"];
 export const DEFAULT_ORDER_BY: SortOrder = "asc";
 
 export const NOTIFICATION_TYPES: NotificationType[] = ["PAYMENT_INITIATED"];
+
+export const DEFAULT_MAX_FILE_COUNT = 10;

@@ -1,5 +1,6 @@
 import type { Route } from "@/core/types";
 import { authController } from "@/modules/auth/auth.controller";
+import gameTagController from "@/modules/gameTag/gameTag.controller";
 import membershipController from "@/modules/membership/membership.controller";
 import notificationController from "@/modules/notification/notification.controller";
 import userController from "@/modules/user/user.controller";

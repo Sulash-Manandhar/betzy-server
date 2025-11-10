@@ -1,5 +1,8 @@
 import { logger } from "@/config/logger";
-import { FILE_UPLOAD_DESTINATION } from "@/core/constant";
+import {
+  DEFAULT_MAX_FILE_COUNT,
+  FILE_UPLOAD_DESTINATION,
+} from "@/core/constant";
 import multer, { type FileFilterCallback } from "multer";
 import path from "path";
 import type { Request } from "express";
@@ -50,5 +53,7 @@ export const uploadSingle = (fieldName: string) => upload.single(fieldName);
  * Middleware for multiple file upload
  * Usage: app.post("/upload", uploadMultiple("images", 5), handler)
  */
-export const uploadMultiple = (fieldName: string, maxCount = 10) =>
-  upload.array(fieldName, maxCount);
+export const uploadMultiple = (
+  fieldName: string,
+  maxCount = DEFAULT_MAX_FILE_COUNT
+) => upload.array(fieldName, maxCount);

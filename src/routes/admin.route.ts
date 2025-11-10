@@ -1,5 +1,7 @@
 import type { Route } from "@/core/types";
+import galleryController from "@/modules/gallery/gallery.controller";
 import gamesController from "@/modules/games/games.controller";
+import gameTagController from "@/modules/gameTag/gameTag.controller";
 import notificationController from "@/modules/notification/notification.controller";
 import userController from "@/modules/user/user.controller";
 
@@ -51,6 +53,46 @@ const adminRoutes: Route[] = [
     description: "Get user detail",
     tags: ["User"],
     handler: userController.findOne,
+  },
+  {
+    url: "/customer/:userId/game-tag",
+    type: "admin",
+    method: "post",
+    description: "Create customer's a new game tag",
+    tags: ["CustomerGameTag"],
+    handler: gameTagController.create,
+  },
+  {
+    url: "/customer/game-tag/:gameTagId",
+    type: "admin",
+    method: "put",
+    description: "Update customer's a new game tag",
+    tags: ["CustomerGameTag"],
+    handler: gameTagController.update,
+  },
+  {
+    url: "/customer/game-tag/:gameTagId",
+    type: "admin",
+    method: "delete",
+    description: "Delete customer's a new game tag",
+    tags: ["CustomerGameTag"],
+    handler: gameTagController.destroy,
+  },
+  {
+    url: "/gallery/upload",
+    type: "admin",
+    method: "post",
+    description: "Upload a single image",
+    tags: ["Image"],
+    handler: galleryController.createImage,
+  },
+  {
+    url: "/gallery/uploads",
+    type: "admin",
+    method: "post",
+    description: "Upload a mulitple image",
+    tags: ["Image"],
+    handler: galleryController.createImages,
   },
 ];
 
