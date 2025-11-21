@@ -1,4 +1,4 @@
-import type { NotificationType } from "prisma/generated/prisma/enums";
+import type { GameType, NotificationType } from "prisma/generated/prisma/enums";
 import { SortOrder } from "prisma/generated/prisma/internal/prismaNamespace";
 
 export const FILE_UPLOAD_DESTINATION = "./public/uploads";
@@ -13,6 +13,15 @@ export const ORDER_BY_TYPE: SortOrder[] = ["asc", "desc"];
 
 export const DEFAULT_ORDER_BY: SortOrder = "asc";
 
-export const NOTIFICATION_TYPES: NotificationType[] = ["PAYMENT_INITIATED"];
+export const NOTIFICATION_TYPES: NotificationType[] = [
+  "PAYMENT_INITIATED",
+  "PAYMENT_FAILED",
+  "PAYMENT_SUCCESS",
+  "TOPUP_COMPLETED",
+  "WITHDRAWAL_APPROVED",
+  "WITHDRAWAL_REJECTED",
+];
+
+export const GAME_TYPES: GameType[] = ["OFF_MARKET", "PLATFORM"];
 
 export const DEFAULT_MAX_FILE_COUNT = 10;

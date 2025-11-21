@@ -38,7 +38,7 @@ const gamesRepo = {
     });
   },
   findAll: (query: FindAllGamePayload) => {
-    const { page, limit, name, description } = query;
+    const { page, limit, name, description, game_type } = query;
 
     const skip = (page - 1) * limit;
     return prisma.$transaction([
@@ -60,6 +60,9 @@ const gamesRepo = {
           },
           is_featured: {
             equals: true,
+          },
+          gameType: {
+            equals: game_type,
           },
         },
       }),

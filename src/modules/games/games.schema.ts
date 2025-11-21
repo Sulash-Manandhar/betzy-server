@@ -1,5 +1,5 @@
+import { GAME_TYPES } from "@/core/constant";
 import { limitSchema, pageNumberSchema } from "@/core/schema";
-import { GameType } from "prisma/generated/prisma/enums";
 import z from "zod";
 
 /** Basic schema template
@@ -16,7 +16,7 @@ export const createGameSchema = z.object({
     game_link: z.string().optional(),
     image_id: z.number().optional(),
     description: z.string().optional(),
-    type: z.enum(GameType).default("OFF_MARKET"),
+    type: z.enum(GAME_TYPES).default("OFF_MARKET"),
     is_featured: z.coerce.boolean().optional().default(true),
   }),
 });
@@ -29,7 +29,7 @@ export const updateGameSchema = z.object({
     name: z.string().optional(),
     game_link: z.string().optional(),
     image_id: z.number().optional(),
-    type: z.enum(GameType).default("OFF_MARKET"),
+    type: z.enum(GAME_TYPES).default("OFF_MARKET"),
     description: z.string().optional(),
   }),
 });
@@ -38,6 +38,7 @@ export const findAllGameSchema = z.object({
   query: z.object({
     name: z.string().optional(),
     description: z.string().optional(),
+    game_type: z.enum(GAME_TYPES).optional(),
     limit: limitSchema,
     page: pageNumberSchema,
   }),
