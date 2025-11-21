@@ -23,6 +23,7 @@ export const securityHeaders = helmet({
   },
   referrerPolicy: { policy: "same-origin" },
   crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "same-site" },
 });
 
 export const customCors = cors(corsOptions);

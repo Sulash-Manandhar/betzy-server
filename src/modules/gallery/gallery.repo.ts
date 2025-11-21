@@ -4,17 +4,17 @@ import { DEFAULT_ORDER_BY } from "@/core/constant";
 
 const galleryRepo = {
   create: (payload: CreateImagePayload) => {
-    return prisma.image.create({
+    return prisma.gallery.create({
       data: payload,
     });
   },
   createMany: (payloads: CreateImagePayload[]) => {
-    return prisma.image.createMany({
+    return prisma.gallery.createMany({
       data: payloads,
     });
   },
   findById: (id: number) => {
-    return prisma.image.findFirst({
+    return prisma.gallery.findFirst({
       where: {
         id,
       },
@@ -24,23 +24,23 @@ const galleryRepo = {
     const { page, limit } = query;
     const skip = (page - 1) * limit;
     return prisma.$transaction([
-      prisma.image.findMany({
+      prisma.gallery.findMany({
         orderBy: {
           createdAt: DEFAULT_ORDER_BY,
         },
         skip,
         take: limit,
       }),
-      prisma.image.count({}),
+      prisma.gallery.count({}),
     ]);
   },
   remove: (id: number) => {
-    return prisma.image.delete({
+    return prisma.gallery.delete({
       where: { id },
     });
   },
   search: (query: string) => {
-    return prisma.image.findMany({
+    return prisma.gallery.findMany({
       where: {
         fileName: {
           contains: query,

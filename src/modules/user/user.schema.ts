@@ -25,6 +25,7 @@ export const findAllUserSchema = z.object({
     email: z.string().optional().nullable(),
     limit: limitSchema,
     page: pageNumberSchema,
+    membership: z.string().optional().nullable(),
   }),
 });
 

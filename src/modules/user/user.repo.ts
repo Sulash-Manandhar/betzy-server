@@ -10,7 +10,7 @@ const userRepo = {
     });
   },
   findAll: (query: FindAllUser["query"]) => {
-    const { email, page, limit } = query;
+    const { email, page, limit, membership } = query;
     const skip = (page - 1) * limit;
     return prisma.$transaction([
       prisma.user.findMany({
@@ -21,7 +21,12 @@ const userRepo = {
         },
         where: {
           email: {
-            contains: email || undefined,
+            contains: email ?? undefined,
+          },
+          membership: {
+            name: {
+              contains: membership ?? undefined,
+            },
           },
         },
         include: {

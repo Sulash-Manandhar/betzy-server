@@ -1,12 +1,3 @@
-/*
-  Warnings:
-
-  - A unique constraint covering the columns `[clerkId]` on the table `User` will be added. If there are existing duplicate values, this will fail.
-  - A unique constraint covering the columns `[referralCode]` on the table `User` will be added. If there are existing duplicate values, this will fail.
-  - Added the required column `clerkId` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `referralCode` to the `User` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- CreateEnum
 CREATE TYPE "TaskType" AS ENUM ('DAILY', 'WEEKLY', 'GENERAL');
 
@@ -17,23 +8,16 @@ CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'SUCCESS', 'FAILED', 'CANCELLED'
 CREATE TYPE "UserType" AS ENUM ('ADMIN', 'CUSTOMER');
 
 -- CreateEnum
-CREATE TYPE "GameTagStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
+CREATE TYPE "GameTagStatus" AS ENUM ('NOT_APPLIED', 'REQUESTED', 'APPROVED', 'REJECTED');
 
 -- CreateEnum
-CREATE TYPE "NotificationType" AS ENUM ('PAYMENT_INITIATED');
+CREATE TYPE "NotificationType" AS ENUM ('PAYMENT_INITIATED', 'PAYMENT_SUCCESS', 'PAYMENT_FAILED', 'TOPUP_COMPLETED', 'WITHDRAWAL_APPROVED', 'WITHDRAWAL_REJECTED');
 
--- DropIndex
-DROP INDEX "public"."User_email_idx";
+-- CreateEnum
+CREATE TYPE "GameType" AS ENUM ('PLATFORM', 'OFF_MARKET');
 
--- AlterTable
-ALTER TABLE "User" ADD COLUMN     "balance" DOUBLE PRECISION DEFAULT 0.0,
-ADD COLUMN     "clerkId" TEXT NOT NULL,
-ADD COLUMN     "deletedAt" TIMESTAMP(3),
-ADD COLUMN     "lastSpinAt" TIMESTAMP(3),
-ADD COLUMN     "membershipId" INTEGER,
-ADD COLUMN     "referralCode" TEXT NOT NULL,
-ADD COLUMN     "timezone" TEXT DEFAULT 'UTC',
-ADD COLUMN     "xp" DOUBLE PRECISION DEFAULT 0.0;
+-- CreateEnum
+CREATE TYPE "TransactionType" AS ENUM ('DEPOSIT', 'WITHDRAWAL', 'TOPUP', 'PAYMENT', 'REFUND', 'REFERRAL_BONUS', 'TASK_REWARD');
 
 -- CreateTable
 CREATE TABLE "Membership" (
@@ -49,13 +33,38 @@ CREATE TABLE "Membership" (
 );
 
 -- CreateTable
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "clerkId" TEXT NOT NULL,
+    "firstName" TEXT DEFAULT 'Anonymous',
+    "lastName" TEXT DEFAULT 'Anonymous',
+    "email" TEXT NOT NULL,
+    "profileUrl" TEXT,
+    "xp" DOUBLE PRECISION DEFAULT 0.0,
+    "balance" DOUBLE PRECISION DEFAULT 0.0,
+    "lastSpinAt" TIMESTAMP(3),
+    "membershipId" INTEGER,
+    "referralCode" TEXT NOT NULL,
+    "timezone" TEXT DEFAULT 'UTC',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Game" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "gameType" "GameType" NOT NULL DEFAULT 'OFF_MARKET',
     "game_link" TEXT,
     "image_id" INTEGER,
     "description" TEXT,
     "is_featured" BOOLEAN DEFAULT false,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+    "minTopupAmount" DOUBLE PRECISION,
+    "maxTopupAmount" DOUBLE PRECISION,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -70,26 +79,11 @@ CREATE TABLE "CustomerGameTag" (
     "gameId" INTEGER NOT NULL,
     "gameTag" TEXT NOT NULL,
     "password" TEXT,
+    "status" "GameTagStatus" NOT NULL DEFAULT 'NOT_APPLIED',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "CustomerGameTag_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Payment" (
-    "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "gameId" INTEGER NOT NULL,
-    "gameTagId" INTEGER NOT NULL,
-    "amount" DOUBLE PRECISION NOT NULL,
-    "currency" TEXT NOT NULL,
-    "status" "PaymentStatus" NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "deletedAt" TIMESTAMP(3),
-
-    CONSTRAINT "Payment_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -103,18 +97,6 @@ CREATE TABLE "Image" (
     "deletedAt" TIMESTAMP(3),
 
     CONSTRAINT "Image_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "GameTagRequest" (
-    "id" SERIAL NOT NULL,
-    "gameId" INTEGER NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "status" "GameTagStatus" NOT NULL DEFAULT 'PENDING',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "GameTagRequest_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -158,24 +140,13 @@ CREATE TABLE "Completion" (
 );
 
 -- CreateTable
-CREATE TABLE "WalletDeposit" (
-    "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "gameId" INTEGER NOT NULL,
-    "amount" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
-    "status" "GameTagStatus" NOT NULL DEFAULT 'PENDING',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "WalletDeposit_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Referral" (
     "id" SERIAL NOT NULL,
     "referrerId" INTEGER NOT NULL,
     "referredUserId" INTEGER NOT NULL,
     "referralCode" TEXT NOT NULL,
+    "bonusAwarded" BOOLEAN NOT NULL DEFAULT false,
+    "bonusAmount" DOUBLE PRECISION,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -189,6 +160,7 @@ CREATE TABLE "Notification" (
     "description" TEXT,
     "type" "NotificationType" NOT NULL,
     "userId" INTEGER NOT NULL,
+    "isRead" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -202,13 +174,25 @@ CREATE UNIQUE INDEX "Membership_name_key" ON "Membership"("name");
 CREATE UNIQUE INDEX "Membership_ordering_key" ON "Membership"("ordering");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_clerkId_key" ON "User"("clerkId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_referralCode_key" ON "User"("referralCode");
+
+-- CreateIndex
+CREATE INDEX "Game_gameType_is_active_idx" ON "Game"("gameType", "is_active");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "CustomerGameTag_gameTag_key" ON "CustomerGameTag"("gameTag");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "CustomerGameTag_gameId_gameTag_key" ON "CustomerGameTag"("gameId", "gameTag");
+CREATE INDEX "CustomerGameTag_userId_gameId_idx" ON "CustomerGameTag"("userId", "gameId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "GameTagRequest_gameId_userId_key" ON "GameTagRequest"("gameId", "userId");
+CREATE UNIQUE INDEX "CustomerGameTag_gameId_gameTag_key" ON "CustomerGameTag"("gameId", "gameTag");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "MasterTask_title_type_key" ON "MasterTask"("title", "type");
@@ -238,10 +222,7 @@ CREATE INDEX "Referral_referralCode_idx" ON "Referral"("referralCode");
 CREATE UNIQUE INDEX "unique_referral" ON "Referral"("referrerId", "referredUserId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_clerkId_key" ON "User"("clerkId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_referralCode_key" ON "User"("referralCode");
+CREATE INDEX "Notification_userId_isRead_idx" ON "Notification"("userId", "isRead");
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_membershipId_fkey" FOREIGN KEY ("membershipId") REFERENCES "Membership"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -256,21 +237,6 @@ ALTER TABLE "CustomerGameTag" ADD CONSTRAINT "CustomerGameTag_userId_fkey" FOREI
 ALTER TABLE "CustomerGameTag" ADD CONSTRAINT "CustomerGameTag_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Payment" ADD CONSTRAINT "Payment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Payment" ADD CONSTRAINT "Payment_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Payment" ADD CONSTRAINT "Payment_gameTagId_fkey" FOREIGN KEY ("gameTagId") REFERENCES "CustomerGameTag"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "GameTagRequest" ADD CONSTRAINT "GameTagRequest_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "GameTagRequest" ADD CONSTRAINT "GameTagRequest_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Task" ADD CONSTRAINT "Task_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -281,12 +247,6 @@ ALTER TABLE "Completion" ADD CONSTRAINT "Completion_taskId_fkey" FOREIGN KEY ("t
 
 -- AddForeignKey
 ALTER TABLE "Completion" ADD CONSTRAINT "Completion_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "WalletDeposit" ADD CONSTRAINT "WalletDeposit_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "WalletDeposit" ADD CONSTRAINT "WalletDeposit_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "Game"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Referral" ADD CONSTRAINT "Referral_referrerId_fkey" FOREIGN KEY ("referrerId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

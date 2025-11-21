@@ -58,6 +58,9 @@ const gamesRepo = {
           description: {
             contains: description,
           },
+          is_featured: {
+            equals: true,
+          },
         },
       }),
       prisma.game.count({

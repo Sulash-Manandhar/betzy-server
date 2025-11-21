@@ -5,9 +5,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://macbookair:@localhost:5432/betzy_db?schema=public&pgbouncer=true"
 }
-
 
 enum TaskType {
   DAILY
@@ -28,13 +27,34 @@ enum UserType {
 }
 
 enum GameTagStatus {
-  PENDING
+  NOT_APPLIED
+  REQUESTED
   APPROVED
   REJECTED
 }
 
 enum NotificationType {
   PAYMENT_INITIATED
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+  TOPUP_COMPLETED
+  WITHDRAWAL_APPROVED
+  WITHDRAWAL_REJECTED
+}
+
+enum GameType {
+  PLATFORM
+  OFF_MARKET
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  TOPUP
+  PAYMENT
+  REFUND
+  REFERRAL_BONUS
+  TASK_REWARD
 }
 
 model Membership {
@@ -49,82 +69,68 @@ model Membership {
 }
 
 model User {
-  id             Int               @id @default(autoincrement())
-  clerkId        String            @unique
-  firstName      String?           @default("Anonymous")
-  lastName       String?           @default("Anonymous")
-  email          String            @unique
-  profileUrl     String?
-  xp             Float?            @default(0.0)
-  balance        Float?            @default(0.0)
-  lastSpinAt     DateTime?
-  membershipId   Int?
-  referralCode   String            @unique
-  timezone       String?           @default("UTC")
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  deletedAt      DateTime?
-  gameTags       CustomerGameTag[]
-  payments       Payment[]
-  gameTagRequest GameTagRequest[]
-  walletDeposit  WalletDeposit[]
-  tasks          Task[]
-  completions    Completion[]
-  membership     Membership?       @relation(fields: [membershipId], references: [id], onDelete: SetNull)
-  referredBy     Referral[]        @relation("Referrer")
-  referrals      Referral[]        @relation("ReferredUser")
-  Notification   Notification[]
+  id           Int               @id @default(autoincrement())
+  clerkId      String            @unique
+  firstName    String?           @default("Anonymous")
+  lastName     String?           @default("Anonymous")
+  email        String            @unique
+  profileUrl   String?
+  xp           Float?            @default(0.0)
+  balance      Float?            @default(0.0)
+  lastSpinAt   DateTime?
+  membershipId Int?
+  referralCode String            @unique
+  timezone     String?           @default("UTC")
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  deletedAt    DateTime?
+  gameTags     UserGameTag[]
+  tasks        Task[]
+  completions  Completion[]
+  membership   Membership?       @relation(fields: [membershipId], references: [id], onDelete: SetNull)
+  referredBy   Referral[]        @relation("Referrer")
+  referrals    Referral[]        @relation("ReferredUser")
+  Notification Notification[]
 }
 
 model Game {
   id             Int               @id @default(autoincrement())
   name           String
+  gameType       GameType          @default(OFF_MARKET) // NEW: Game type
   game_link      String?
   image_id       Int?
   description    String?
-  is_featured    Boolean?          @default(false)
+  is_featured    Boolean?          @default(true)
+  is_active      Boolean           @default(true)
+  minTopupAmount Float?
+  maxTopupAmount Float?
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
   deletedAt      DateTime?
-  tags           CustomerGameTag[]
-  payments       Payment[]
-  gameTagRequest GameTagRequest[]
-  walletDeposit  WalletDeposit[]
-  image          Image?            @relation(fields: [image_id], references: [id], onDelete: NoAction)
+  tags           UserGameTag[]
+  image          Gallery?          @relation(fields: [image_id], references: [id], onDelete: NoAction)
+
+  @@index([gameType, is_active])
 }
 
-model CustomerGameTag {
-  id        Int       @id @default(autoincrement())
+model UserGameTag {
+  id        Int           @id @default(autoincrement())
   userId    Int
   gameId    Int
-  gameTag   String    @unique
+  gameTag   String        @unique
   password  String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Game      Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  Payment   Payment[]
+  status    GameTagStatus @default(NOT_APPLIED)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  User      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Game      Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@unique([gameId, gameTag])
+  @@index([userId, gameId])
+	@@map("CustomerGameTag")
 }
 
-model Payment {
-  id              Int             @id @default(autoincrement())
-  userId          Int
-  gameId          Int
-  gameTagId       Int
-  amount          Float
-  currency        String
-  status          PaymentStatus
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  deletedAt       DateTime?
-  User            User            @relation(fields: [userId], references: [id], onDelete: NoAction)
-  Game            Game            @relation(fields: [gameId], references: [id], onDelete: NoAction)
-  CustomerGameTag CustomerGameTag @relation(fields: [gameTagId], references: [id], onDelete: NoAction)
-}
-
-model Image {
+model Gallery {
   id        Int       @id @default(autoincrement())
   fileName  String
   url       String
@@ -133,19 +139,8 @@ model Image {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   game      Game[]
-}
 
-model GameTagRequest {
-  id        Int           @id @default(autoincrement())
-  gameId    Int
-  userId    Int
-  status    GameTagStatus @default(PENDING)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  User      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Game      Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
-
-  @@unique([gameId, userId])
+  @@map("Image")
 }
 
 model MasterTask {
@@ -193,29 +188,19 @@ model Completion {
   @@index([userId, taskId])
 }
 
-model WalletDeposit {
-  id        Int           @id @default(autoincrement())
-  userId    Int
-  gameId    Int
-  amount    Float         @default(0.0)
-  status    GameTagStatus @default(PENDING)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  game      Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
-}
-
 model Referral {
   id             Int      @id @default(autoincrement())
   referrerId     Int
   referredUserId Int
   referralCode   String
+  bonusAwarded   Boolean  @default(false)
+  bonusAmount    Float?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   referrer       User     @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
   referredUser   User     @relation("ReferredUser", fields: [referredUserId], references: [id], onDelete: Cascade)
 
-  @@unique([referrerId, referredUserId], map: "unique_referral") // Prevents same referrer-referred pair
+  @@unique([referrerId, referredUserId], map: "unique_referral")
   @@index([referrerId])
   @@index([referredUserId])
   @@index([referralCode])
@@ -227,7 +212,10 @@ model Notification {
   description String?
   type        NotificationType
   userId      Int
+  isRead      Boolean          @default(false)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
 }

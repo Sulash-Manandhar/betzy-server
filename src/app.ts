@@ -21,14 +21,17 @@ if (!fs.existsSync(FILE_UPLOAD_DESTINATION)) {
 
 export function createApp(): Application {
   const app = express();
+
+  app.use(customCors);
+
   app.use(
     clerkMiddleware({
       secretKey: env.CLERK_SECRET_KEY,
       publishableKey: env.CLERK_PUBLISHABLE_KEY,
     })
   );
+
   app.use(securityHeaders);
-  app.use(customCors);
   app.use(compression());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
@@ -37,7 +40,7 @@ export function createApp(): Application {
 
   app.use(
     "/public/uploads",
-    express.static(FILE_UPLOAD_DESTINATION, {
+    express.static("./public/uploads", {
       setHeaders: (res) => {
         res.header("Access-Control-Allow-Origin", env.CORS_HOSTS);
         res.header("Access-Control-Allow-Methods", "GET");
