@@ -8,7 +8,7 @@ import type {
 
 const gameTagRepo = {
   create: (userId: number, payload: CreateGameTag["body"]) => {
-    return prisma.customerGameTag.create({
+    return prisma.userGameTag.create({
       data: {
         ...payload,
         userId,
@@ -16,14 +16,14 @@ const gameTagRepo = {
     });
   },
   findById: (id: number) => {
-    return prisma.customerGameTag.findFirst({
+    return prisma.userGameTag.findFirst({
       where: {
         id,
       },
     });
   },
   update: (id: number, payload: UpdateGameTag["body"]) => {
-    return prisma.customerGameTag.update({
+    return prisma.userGameTag.update({
       data: payload,
       where: {
         id,
@@ -31,7 +31,7 @@ const gameTagRepo = {
     });
   },
   destroy: (id: number) => {
-    return prisma.customerGameTag.delete({
+    return prisma.userGameTag.delete({
       where: {
         id,
       },
@@ -41,7 +41,7 @@ const gameTagRepo = {
     const { page, limit, gameId } = query;
     const skip = (page - 1) * limit;
     return prisma.$transaction([
-      prisma.customerGameTag.findMany({
+      prisma.userGameTag.findMany({
         skip,
         take: limit,
         orderBy: {
@@ -55,7 +55,7 @@ const gameTagRepo = {
           Game: true,
         },
       }),
-      prisma.customerGameTag.count({
+      prisma.userGameTag.count({
         orderBy: {
           createdAt: DEFAULT_ORDER_BY,
         },
@@ -66,7 +66,7 @@ const gameTagRepo = {
     ]);
   },
   findGameTagByUserIdAndGameId: (userId: number, gameId: number) => {
-    return prisma.customerGameTag.findFirst({
+    return prisma.userGameTag.findFirst({
       where: {
         userId,
         gameId,

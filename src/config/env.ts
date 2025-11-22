@@ -24,6 +24,7 @@ const envSchema = z.object({
   NOWPAYMENT_EMAIL: z.string(),
   NOWPAYMENT_PASSWORD: z.string(),
   ENABLE_ROUTE_LOGGER: z.coerce.boolean().default(false),
+  CLERK_WEBHOOK_SIGNING_SECRET: z.string(),
 });
 
 function validateEnv() {

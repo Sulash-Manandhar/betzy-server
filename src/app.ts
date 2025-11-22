@@ -12,6 +12,7 @@ import { customCors, securityHeaders } from "./middleware/security";
 import { publicRoutes } from "./routes/public.route";
 import adminRoutes from "./routes/admin.route";
 import protectedRoutes from "./routes/protected.route";
+import webhookRouter from "./routes/webhook.route";
 
 if (!fs.existsSync(FILE_UPLOAD_DESTINATION)) {
   logger.warn("FILE UPLOADS FOLDER NOT FOUND");
@@ -24,6 +25,8 @@ export function createApp(): Application {
 
   app.use(customCors);
 
+  app.use(webhookRouter);
+
   app.use(
     clerkMiddleware({
       secretKey: env.CLERK_SECRET_KEY,
@@ -32,7 +35,17 @@ export function createApp(): Application {
   );
 
   app.use(securityHeaders);
-  app.use(compression());
+
+  app.use(
+    compression({
+      filter: (req, res) => {
+        if (req.path?.startsWith("/api/webhooks")) {
+          return false;
+        }
+        return compression.filter(req, res);
+      },
+    })
+  );
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
