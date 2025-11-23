@@ -127,7 +127,6 @@ model UserGameTag {
 
   @@unique([gameId, gameTag])
   @@index([userId, gameId])
-	@@map("CustomerGameTag")
 }
 
 model Gallery {
@@ -139,8 +138,6 @@ model Gallery {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   game      Game[]
-
-  @@map("Image")
 }
 
 model MasterTask {
@@ -153,7 +150,6 @@ model MasterTask {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   tasks         Task[]
-
   @@unique([title, type])
 }
 
@@ -184,7 +180,6 @@ model Completion {
   membershipPoints Int      @default(0)
   task             Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@index([userId, taskId])
 }
 
@@ -216,6 +211,5 @@ model Notification {
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@index([userId, isRead])
 }

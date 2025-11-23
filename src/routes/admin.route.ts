@@ -59,7 +59,7 @@ const adminRoutes: Route[] = [
     type: "admin",
     method: "post",
     description: "Create customer's a new game tag",
-    tags: ["CustomerGameTag"],
+    tags: ["UserGameTag"],
     handler: gameTagController.create,
   },
   {
@@ -67,7 +67,7 @@ const adminRoutes: Route[] = [
     type: "admin",
     method: "put",
     description: "Update customer's a new game tag",
-    tags: ["CustomerGameTag"],
+    tags: ["UserGameTag"],
     handler: gameTagController.update,
   },
   {
@@ -75,7 +75,7 @@ const adminRoutes: Route[] = [
     type: "admin",
     method: "delete",
     description: "Delete customer's a new game tag",
-    tags: ["CustomerGameTag"],
+    tags: ["UserGameTag"],
     handler: gameTagController.destroy,
   },
   {

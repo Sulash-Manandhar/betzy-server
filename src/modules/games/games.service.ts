@@ -9,6 +9,7 @@ import type {
 const gamesService = {
   create: async (payload: CreateGamePayload) => {
     try {
+      console.log("GAME PAYLOAD", payload);
       const game = await gamesRepo.create(payload);
       return {
         message: "Successfully added a new game",

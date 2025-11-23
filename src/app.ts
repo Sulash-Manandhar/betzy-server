@@ -36,16 +36,7 @@ export function createApp(): Application {
 
   app.use(securityHeaders);
 
-  app.use(
-    compression({
-      filter: (req, res) => {
-        if (req.path?.startsWith("/api/webhooks")) {
-          return false;
-        }
-        return compression.filter(req, res);
-      },
-    })
-  );
+  app.use(compression());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 

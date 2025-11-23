@@ -7,7 +7,7 @@ export type Tag =
   | "User"
   | "Membership"
   | "Game"
-  | "CustomerGameTag"
+  | "UserGameTag"
   | "Payment"
   | "Image"
   | "GameTagRequest"

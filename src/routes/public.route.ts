@@ -33,7 +33,7 @@ export const publicRoutes: Route[] = [
     type: "public",
     method: "get",
     description: "Get customer game tag by id",
-    tags: ["CustomerGameTag"],
+    tags: ["UserGameTag"],
     handler: gameTagController.findOne,
   },
   {
@@ -41,7 +41,7 @@ export const publicRoutes: Route[] = [
     type: "public",
     method: "get",
     description: "Get all gametag of a customer",
-    tags: ["CustomerGameTag"],
+    tags: ["UserGameTag"],
     handler: gameTagController.findAll,
   },
 ];

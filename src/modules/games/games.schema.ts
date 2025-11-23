@@ -14,10 +14,11 @@ export const createGameSchema = z.object({
   body: z.object({
     name: z.string(),
     game_link: z.string().optional(),
-    image_id: z.number().optional(),
+    image_id: z.coerce.number().optional(),
     description: z.string().optional(),
     type: z.enum(GAME_TYPES).default("OFF_MARKET"),
     is_featured: z.coerce.boolean().optional().default(true),
+    is_active: z.coerce.boolean().default(true),
   }),
 });
 
@@ -27,10 +28,11 @@ export const updateGameSchema = z.object({
   }),
   body: z.object({
     name: z.string().optional(),
-    game_link: z.string().optional(),
+    game_link: z.coerce.string().optional(),
     image_id: z.number().optional(),
-    type: z.enum(GAME_TYPES).default("OFF_MARKET"),
+    type: z.enum(GAME_TYPES).default("OFF_MARKET").optional(),
     description: z.string().optional(),
+    is_active: z.coerce.boolean().optional(),
   }),
 });
 

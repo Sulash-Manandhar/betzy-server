@@ -4,12 +4,18 @@ import type {
   FindAllGamePayload,
   UpdateGamePayload,
 } from "./games.schema";
-import { DEFAULT_LIMIT, DEFAULT_PAGE } from "@/core/constant";
 
 const gamesRepo = {
   create: (payload: CreateGamePayload) => {
     return prisma.game.create({
-      data: payload,
+      data: {
+        name: payload.name,
+        is_featured: payload.is_featured,
+        description: "test",
+        game_link: payload.game_link,
+        is_active: payload.is_active,
+        image_id: payload.image_id,
+      },
     });
   },
   update: (id: number, payload: UpdateGamePayload) => {

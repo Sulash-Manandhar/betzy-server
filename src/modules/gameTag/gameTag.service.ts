@@ -34,7 +34,7 @@ const gameTagService = {
       if (error instanceof PrismaClientKnownRequestError) {
         if (
           error?.meta &&
-          error?.meta?.target === "CustomerGameTag_gameId_gameTag_key"
+          error?.meta?.target === "UserGameTag_gameId_gameTag_key"
         ) {
           throw Boom.conflict("GameTag has already been registered.", [
             {
