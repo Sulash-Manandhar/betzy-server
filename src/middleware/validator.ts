@@ -8,13 +8,13 @@ export function validate<T extends ZodTypeAny>(
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log("Im running");
       await schema.parseAsync({
         body: req.body,
         query: req.query,
         params: req.params,
       });
     } catch (error) {
-      console.log("IsZodError");
       if (error instanceof ZodError) {
         const errors = error.issues.map((err) => ({
           path: err.path.join("."),

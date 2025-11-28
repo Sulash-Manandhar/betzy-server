@@ -3,6 +3,7 @@ import galleryController from "@/modules/gallery/gallery.controller";
 import gamesController from "@/modules/games/games.controller";
 import gameTagController from "@/modules/gameTag/gameTag.controller";
 import notificationController from "@/modules/notification/notification.controller";
+import { referralController } from "@/modules/referral/referral.controller";
 import userController from "@/modules/user/user.controller";
 
 const adminRoutes: Route[] = [
@@ -45,6 +46,14 @@ const adminRoutes: Route[] = [
     description: "Get all users",
     tags: ["User"],
     handler: userController.findAll,
+  },
+  {
+    url: "/user/referrals",
+    type: "admin",
+    method: "get",
+    description: "List user's referrals",
+    tags: ["Referral"],
+    handler: referralController.findAllByUserId,
   },
   {
     url: "/user/:id",
@@ -90,7 +99,7 @@ const adminRoutes: Route[] = [
     url: "/gallery/uploads",
     type: "admin",
     method: "post",
-    description: "Upload a mulitple image",
+    description: "Upload a multiple image",
     tags: ["Image"],
     handler: galleryController.createImages,
   },

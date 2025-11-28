@@ -40,7 +40,7 @@ export const publicRoutes: Route[] = [
     url: "/customer/:userId/game-tag",
     type: "public",
     method: "get",
-    description: "Get all gametag of a customer",
+    description: "Get all game tag of a customer",
     tags: ["UserGameTag"],
     handler: gameTagController.findAll,
   },
