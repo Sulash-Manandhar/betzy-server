@@ -1,7 +1,7 @@
 import prisma from "@/config/database";
 
 export const referralRepo = {
-  findByUser: (code: string) => {
+  findByReferralCode: (code: string) => {
     return prisma.user.findFirst({
       where: {
         referralCode: code,
@@ -17,5 +17,23 @@ export const referralRepo = {
         referredUserId: referredUserId,
       },
     });
+  },
+  findAllByReferralId: (referralId: number) => {
+    return prisma.$transaction([
+      prisma.referral.findMany({
+        where: {
+          referrerId: referralId,
+        },
+        include: {
+          referredUser: true,
+          referrer: true,
+        },
+      }),
+      prisma.referral.count({
+        where: {
+          referrerId: referralId,
+        },
+      }),
+    ]);
   },
 };
