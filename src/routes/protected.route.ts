@@ -3,6 +3,7 @@ import { authController } from "@/modules/auth/auth.controller";
 import gameTagController from "@/modules/gameTag/gameTag.controller";
 import membershipController from "@/modules/membership/membership.controller";
 import notificationController from "@/modules/notification/notification.controller";
+import { referralController } from "@/modules/referral/referral.controller";
 import userController from "@/modules/user/user.controller";
 
 const protectedRoutes: Route[] = [
@@ -37,6 +38,14 @@ const protectedRoutes: Route[] = [
     description: "Get user points",
     tags: ["User"],
     handler: userController.points,
+  },
+  {
+    url: "/referral",
+    type: "protected",
+    method: "post",
+    description: "Create referral code",
+    tags: ["Referral"],
+    handler: referralController.createReferralCode,
   },
 ];
 

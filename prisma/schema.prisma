@@ -1,11 +1,12 @@
 generator client {
   provider = "prisma-client"
   output   = "./generated/prisma"
+  engine   = "classic"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://macbookair:@localhost:5432/betzy_db?schema=public&pgbouncer=true"
+  url      = env("DATABASE_URL")
 }
 
 enum TaskType {
@@ -69,46 +70,46 @@ model Membership {
 }
 
 model User {
-  id           Int               @id @default(autoincrement())
-  clerkId      String            @unique
-  firstName    String?           @default("Anonymous")
-  lastName     String?           @default("Anonymous")
-  email        String            @unique
+  id           Int            @id @default(autoincrement())
+  clerkId      String         @unique
+  firstName    String?        @default("Anonymous")
+  lastName     String?        @default("Anonymous")
+  email        String         @unique
   profileUrl   String?
-  xp           Float?            @default(0.0)
-  balance      Float?            @default(0.0)
+  xp           Float?         @default(0.0)
+  balance      Float?         @default(0.0)
   lastSpinAt   DateTime?
   membershipId Int?
-  referralCode String            @unique
-  timezone     String?           @default("UTC")
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
+  referralCode String         @unique
+  timezone     String?        @default("UTC")
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
   deletedAt    DateTime?
   gameTags     UserGameTag[]
   tasks        Task[]
   completions  Completion[]
-  membership   Membership?       @relation(fields: [membershipId], references: [id], onDelete: SetNull)
-  referredBy   Referral[]        @relation("Referrer")
-  referrals    Referral[]        @relation("ReferredUser")
+  membership   Membership?    @relation(fields: [membershipId], references: [id], onDelete: SetNull)
+  referredBy   Referral[]     @relation("Referrer")
+  referrals    Referral[]     @relation("ReferredUser")
   Notification Notification[]
 }
 
 model Game {
-  id             Int               @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   name           String
-  gameType       GameType          @default(OFF_MARKET) // NEW: Game type
+  gameType       GameType      @default(OFF_MARKET) // NEW: Game type
   game_link      String?
   image_id       Int?
   description    String?
-  is_featured    Boolean?          @default(true)
-  is_active      Boolean           @default(true)
+  is_featured    Boolean?      @default(true)
+  is_active      Boolean       @default(true)
   minTopupAmount Float?
   maxTopupAmount Float?
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
   deletedAt      DateTime?
   tags           UserGameTag[]
-  image          Gallery?          @relation(fields: [image_id], references: [id], onDelete: NoAction)
+  image          Gallery?      @relation(fields: [image_id], references: [id], onDelete: NoAction)
 
   @@index([gameType, is_active])
 }
@@ -150,6 +151,7 @@ model MasterTask {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   tasks         Task[]
+
   @@unique([title, type])
 }
 
@@ -180,6 +182,7 @@ model Completion {
   membershipPoints Int      @default(0)
   task             Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId, taskId])
 }
 
@@ -211,5 +214,6 @@ model Notification {
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId, isRead])
 }

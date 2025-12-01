@@ -2,6 +2,7 @@ import type { Route } from "@/core/types";
 import gamesController from "@/modules/games/games.controller";
 import gameTagController from "@/modules/gameTag/gameTag.controller";
 import membershipController from "@/modules/membership/membership.controller";
+import { referralController } from "@/modules/referral/referral.controller";
 
 export const publicRoutes: Route[] = [
   {
@@ -43,5 +44,21 @@ export const publicRoutes: Route[] = [
     description: "Get all game tag of a customer",
     tags: ["UserGameTag"],
     handler: gameTagController.findAll,
+  },
+  {
+    url: "/customer/:userId/game-tag",
+    type: "public",
+    method: "get",
+    description: "Get all game tag of a customer",
+    tags: ["UserGameTag"],
+    handler: gameTagController.findAll,
+  },
+  {
+    url: "/referral/validate",
+    type: "public",
+    method: "post",
+    description: "Validate referral code",
+    tags: ["Referral"],
+    handler: referralController.validate,
   },
 ];

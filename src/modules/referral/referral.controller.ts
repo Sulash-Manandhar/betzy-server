@@ -11,7 +11,19 @@ import { Boom, HTTPStatusCode } from "@/utils/packages";
 import { getAuth } from "@clerk/express";
 
 export const referralController = {
-  createReferralCode: asyncHandler(async (req: Request, res: Response) => {}),
+  createReferralCode: asyncValidationHandler<ValidateReferralCode>(
+    validateReferralCodeSchema
+  )(async (req, res, validated) => {
+    const referrerClerkId = getAuth(req)?.userId;
+    if (!referrerClerkId) {
+      throw Boom.badRequest("User not found, please login again");
+    }
+    const response = await referralService.refer(
+      referrerClerkId,
+      validated.body
+    );
+    res.status(HTTPStatusCode.OK).json(response);
+  }),
   validate: asyncValidationHandler<ValidateReferralCode>(
     validateReferralCodeSchema
   )(async (req, res, validate) => {
@@ -21,12 +33,12 @@ export const referralController = {
   createRefer: asyncValidationHandler<ValidateReferralCode>(
     validateReferralCodeSchema
   )(async (req, res, validate) => {
-    const referrerClerkId = getAuth(req)?.userId;
-    if (!referrerClerkId) {
+    const referredUserClerkId = getAuth(req)?.userId;
+    if (!referredUserClerkId) {
       throw Boom.badRequest("User not found, please login again");
     }
     const response = await referralService.refer(
-      referrerClerkId,
+      referredUserClerkId,
       validate.body
     );
     res.status(HTTPStatusCode.OK).json(response);
@@ -34,6 +46,7 @@ export const referralController = {
   findAllByUserId: asyncValidationHandler<FindAllReferralByReferralId>(
     findAllReferralByReferralId
   )(async (req, res, validated) => {
+    console.log(validated);
     const response = await referralService.findAllByReferralId(validated.query);
     res.status(HTTPStatusCode.OK).json(response);
   }),

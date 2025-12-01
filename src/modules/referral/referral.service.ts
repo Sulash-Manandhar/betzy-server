@@ -53,14 +53,16 @@ export const referralService = {
     }
   },
   refer: async (
-    referralClerkId: string,
+    referredClerkId: string,
     { code }: ValidateReferralCode["body"]
   ) => {
     try {
-      const referredUser = await authRepo.findUserByClerkId(referralClerkId);
+      const referredUser = await authRepo.findUserByClerkId(referredClerkId);
       if (!referredUser) throw Boom.conflict("Referred User not found");
       const referrerUser = await referralRepo.findByReferralCode(code);
       if (!referrerUser) throw Boom.conflict("Referrer User not found");
+      if (referredUser.id === referrerUser.id)
+        throw Boom.conflict("You cannot refer yourself");
       await referralRepo.create(referrerUser.id, referredUser.id, code);
       return {
         message: "OK",
