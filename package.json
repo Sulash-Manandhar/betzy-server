@@ -17,6 +17,9 @@
     "script:referralCode": "bun run src/scripts/assignReferralCodeToUser.ts",
     "script:syncUser": "bun run src/scripts/syncUser.ts"
   },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/compression": "^1.8.1",

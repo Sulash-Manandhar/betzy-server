@@ -1,3 +1,4 @@
+import { GAME_STATUS } from "@/core/constant";
 import { limitSchema, pageNumberSchema } from "@/core/schema";
 import z from "zod";
 
@@ -25,6 +26,7 @@ export const findAllGameTagSchema = z.object({
     limit: limitSchema,
     page: pageNumberSchema,
     gameId: z.number().optional().nullable(),
+    status: z.enum(GAME_STATUS).optional().nullable(),
   }),
   params: z.object({
     userId: z.coerce.number(),
@@ -36,6 +38,7 @@ export const updateGameTagSchema = z.object({
     gameTag: z.string().optional(),
     gameId: z.number().optional(),
     password: z.string().optional(),
+    status: z.enum(GAME_STATUS),
   }),
   params: z.object({
     gameTagId: z.coerce.number(),

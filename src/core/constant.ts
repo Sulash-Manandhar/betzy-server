@@ -1,4 +1,8 @@
-import type { GameType, NotificationType } from "prisma/generated/prisma/enums";
+import type {
+  GameTagStatus,
+  GameType,
+  NotificationType,
+} from "prisma/generated/prisma/enums";
 import { SortOrder } from "prisma/generated/prisma/internal/prismaNamespace";
 
 export const FILE_UPLOAD_DESTINATION = "./public/uploads";
@@ -25,3 +29,10 @@ export const NOTIFICATION_TYPES: NotificationType[] = [
 export const GAME_TYPES: GameType[] = ["OFF_MARKET", "PLATFORM"];
 
 export const DEFAULT_MAX_FILE_COUNT = 10;
+
+export const GAME_STATUS: GameTagStatus[] = [
+  "APPROVED",
+  "NOT_APPLIED",
+  "REJECTED",
+  "REQUESTED",
+];

@@ -7,6 +7,9 @@ const userRepo = {
       where: {
         id,
       },
+      include: {
+        membership: true,
+      },
     });
   },
   findAll: (query: FindAllUser["query"]) => {

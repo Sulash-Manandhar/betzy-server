@@ -38,7 +38,7 @@ const gameTagRepo = {
     });
   },
   findAll: (userId: number, query: FindAllGameTag["query"]) => {
-    const { page, limit, gameId } = query;
+    const { page, limit, gameId, status } = query;
     const skip = (page - 1) * limit;
     return prisma.$transaction([
       prisma.userGameTag.findMany({
@@ -50,6 +50,7 @@ const gameTagRepo = {
         where: {
           userId,
           gameId: gameId ?? undefined,
+          status: status ?? undefined,
         },
         include: {
           Game: true,
@@ -61,6 +62,8 @@ const gameTagRepo = {
         },
         where: {
           userId,
+          gameId: gameId ?? undefined,
+          status: status ?? undefined,
         },
       }),
     ]);
@@ -70,6 +73,16 @@ const gameTagRepo = {
       where: {
         userId,
         gameId,
+      },
+    });
+  },
+
+  requestGameTag: (userId: number, gameId: number) => {
+    return prisma.userGameTag.create({
+      data: {
+        status: "REQUESTED",
+        userId: userId,
+        gameId: gameId,
       },
     });
   },
